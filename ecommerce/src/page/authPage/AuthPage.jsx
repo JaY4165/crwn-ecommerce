@@ -1,9 +1,14 @@
-import SignIn from "../../components/signIn/SignIn"
+import SignIn from "../../components/signIn/SignIn";
+import SignUp from "../../components/signUp/SignUp";
+import "./auth-page.scss";
 
 const AuthPage = () => {
   return (
-    <SignIn/>
-  )
-}
+    <div className="authentication-container">
+      <SignUp />
+      <SignIn />
+    </div>
+  );
+};
 
-export default AuthPage
+export default AuthPage;

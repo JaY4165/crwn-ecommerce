@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import CustomButton from "../customButton/CustomButton";
 import FormInput from "../formInput/FormInput";
-import "./sign-in.scss";
+import "./sign-up.scss";
 import axios from "axios";
 
-const SignIn = () => {
+const SignUp = () => {
+  const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
@@ -15,24 +16,29 @@ const SignIn = () => {
     setIsSubmitting(true);
     if (Object.keys(errors).length === 0) {
       try {
-        const res = await axios.post("http://localhost:3000/signin", {
+        const res = await axios.post("http://localhost:3000/signup", {
+          displayName,
           email,
           password,
         });
-        alert("Sign In Successful");
+        alert("Sign Up Successful");
         console.log(res.data);
       } catch (error) {
-        alert("Sign in failed, please try again");
+        alert("Sign up failed, please try again");
         console.log(error);
       }
     } else {
-      alert("Sign in Failed, please try again after fixing the errors");
+      alert("Sign Up Failed, please try again after fixing the errors");
     }
     setIsSubmitting(false);
   };
 
   useEffect(() => {
     const newErrors = {};
+
+    if (!displayName) {
+      newErrors.displayName = "Display Name is required";
+    }
 
     if (!email) {
       newErrors.email = "Email is required";
@@ -46,13 +52,21 @@ const SignIn = () => {
       newErrors.password = "Password must have at least 6 characters";
     }
     setErrors(newErrors);
-  }, [email, password]);
+  }, [email, password, displayName]);
 
   return (
-    <div className="signIn">
-      <h2 className="title">I already have an account</h2>
-      <span>Sign in with your email and password</span>
+    <div className="sign-up-container">
+      <h2>Not registered yet? Create an account</h2>
+      <span>Sign up</span>
       <form onSubmit={handleSubmit}>
+        <FormInput
+          type="text"
+          name="displayName"
+          required
+          placeholder="Display Name"
+          onChange={(e) => setDisplayName(e.target.value)}
+        />
+        {errors.displayName && <p className="error">{errors.displayName}</p>}
         <FormInput
           type="email"
           name="email"
@@ -70,11 +84,11 @@ const SignIn = () => {
         />
         {errors.password && <p className="error">{errors.password}</p>}
         <CustomButton type="submit" className="sign-in" disabled={isSubmitting}>
-          Sign in
+          Sign In
         </CustomButton>
       </form>
     </div>
   );
 };
 
-export default SignIn;
+export default SignUp;

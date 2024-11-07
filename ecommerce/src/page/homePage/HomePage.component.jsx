@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MenuItem from "../../components/menuItem/MenuItem";
 import "./home-page.style.css";
-import  productCategories from "./product-categories"
+import axios from "axios";
 
 const HomePage = () => {
   // const arr = [1, 2, 3];
@@ -11,18 +11,28 @@ const HomePage = () => {
   // const obj = { a: 1, b: 2, c: 3 };
   // const { a, b, c } = obj;
   // console.log(a, b, c);
-    const [productsCat] = useState(productCategories.sections);
+  const [productsCat, setProductsCat] = useState([]);
 
+  useEffect(() => {
+    const getProductData = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/categories");
+        console.log(res.data.categories);
+        setProductsCat(res.data.categories);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getProductData();
+  }, []);
 
   return (
     <div className="home-page">
       <h1>Welcome to my Home Page</h1>
       <div className="directory-menu">
-        {
-          productsCat.map((product) => (
-            <MenuItem key={product.id} product={product} />
-          ))
-        }
+        {productsCat.map((product) => (
+          <MenuItem key={product.id} product={product} />
+        ))}
       </div>
     </div>
   );
