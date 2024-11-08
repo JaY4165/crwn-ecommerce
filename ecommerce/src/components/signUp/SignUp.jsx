@@ -1,90 +1,110 @@
-import { useEffect, useState } from "react";
 import CustomButton from "../customButton/CustomButton";
 import FormInput from "../formInput/FormInput";
 import "./sign-up.scss";
 import axios from "axios";
+import { useForm } from "react-hook-form";
 
 const SignUp = () => {
-  const [displayName, setDisplayName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors: formErrors, isSubmitting },
+    watch,
+  } = useForm({
+    defaultValues: {
+      displayName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setIsSubmitting(true);
-    if (Object.keys(errors).length === 0) {
-      try {
-        const res = await axios.post("http://localhost:3000/signup", {
-          displayName,
-          email,
-          password,
-        });
-        alert("Sign Up Successful");
-        console.log(res.data);
-      } catch (error) {
-        alert("Sign up failed, please try again");
-        console.log(error);
-      }
-    } else {
-      alert("Sign Up Failed, please try again after fixing the errors");
+  const handleSignUp = async (data) => {
+    console.log(data);
+    try {
+      const res = await axios.post("http://localhost:3000/signup", {
+        displayName: data.displayName,
+        email: data.email,
+        password: data.password,
+      });
+      alert("Sign Up Successful");
+      console.log(res.data);
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data.message
+        : error.message;
+      alert(`Sign up failed: ${errorMessage}`);
+      console.log(error);
     }
-    setIsSubmitting(false);
   };
-
-  useEffect(() => {
-    const newErrors = {};
-
-    if (!displayName) {
-      newErrors.displayName = "Display Name is required";
-    }
-
-    if (!email) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = "Email is invalid";
-    }
-
-    if (!password) {
-      newErrors.password = "Password is required";
-    } else if (password.length < 6) {
-      newErrors.password = "Password must have at least 6 characters";
-    }
-    setErrors(newErrors);
-  }, [email, password, displayName]);
 
   return (
     <div className="sign-up-container">
       <h2>Not registered yet? Create an account</h2>
       <span>Sign up</span>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(handleSignUp)}>
         <FormInput
           type="text"
           name="displayName"
           required
           placeholder="Display Name"
-          onChange={(e) => setDisplayName(e.target.value)}
+          {...register("displayName", { required: "Display Name is required" })}
         />
-        {errors.displayName && <p className="error">{errors.displayName}</p>}
+        {formErrors.displayName && (
+          <p className="error">{formErrors.displayName.message}</p>
+        )}
+
         <FormInput
           type="email"
           name="email"
           required
           placeholder="Email"
-          onChange={(e) => setEmail(e.target.value)}
+          {...register("email", {
+            required: "Email is required",
+            pattern: {
+              value: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
+              message: "Email is invalid",
+            },
+          })}
         />
-        {errors.email && <p className="error">{errors.email}</p>}
+        {formErrors.email && (
+          <p className="error">{formErrors.email.message}</p>
+        )}
+
         <FormInput
           type="password"
           name="password"
           required
           placeholder="Password"
-          onChange={(e) => setPassword(e.target.value)}
+          {...register("password", {
+            required: "Password is required",
+            minLength: {
+              value: 6,
+              message: "Password must have at least 6 characters",
+            },
+          })}
         />
-        {errors.password && <p className="error">{errors.password}</p>}
+        {formErrors.password && (
+          <p className="error">{formErrors.password.message}</p>
+        )}
+
+        <FormInput
+          type="password"
+          name="confirmPassword"
+          required
+          placeholder="Confirm Password"
+          {...register("confirmPassword", {
+            required: "Please confirm your password",
+            validate: (value) =>
+              value === watch("password") || "Passwords do not match",
+          })}
+        />
+        {formErrors.confirmPassword && (
+          <p className="error">{formErrors.confirmPassword.message}</p>
+        )}
+
         <CustomButton type="submit" className="sign-in" disabled={isSubmitting}>
-          Sign In
+          Sign Up
         </CustomButton>
       </form>
     </div>

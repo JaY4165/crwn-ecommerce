@@ -44,7 +44,7 @@ app.post("/signup", (req, res) => {
   let newSignup = new User({ email, password, displayName });
   newSignup
     .save()
-    .then((user) => res.send(`${user.email} Sign Up Successful`))
+    .then((user) => res.status(200).send(`${user.email} Sign Up Successful`))
     .catch((err) => {
       console.log(err);
       res.status(500).json({ message: err });

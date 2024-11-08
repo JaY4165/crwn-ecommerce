@@ -1,8 +1,9 @@
+import { forwardRef } from "react";
 
-const FormInput = (props) => {
-  return (
-      <input {...props}/>
-  )
-}
+/* eslint-disable react/prop-types */
+// eslint-disable-next-line react/display-name
+const FormInput = forwardRef(({ ...props }, ref) => {
+  return <input ref={ref} {...props} />;
+});
 
-export default FormInput
+export default FormInput;
