@@ -6,6 +6,8 @@ import Header from "./components/header/Header.jsx";
 import ShopPage from "./page/shopPage/ShopPage.component.jsx";
 import HomePage from "./page/homePage/HomePage.component.jsx";
 import AuthPage from "./page/authPage/AuthPage.jsx";
+import store from "./store.js";
+import { Provider } from "react-redux";
 
 const router = createBrowserRouter([
   {
@@ -22,7 +24,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/auth",
-        element: <AuthPage/>
+        element: <AuthPage />,
       },
 
       {
@@ -30,11 +32,13 @@ const router = createBrowserRouter([
         element: <div>Not Found</div>,
       },
     ],
-  }
+  },
 ]);
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   </StrictMode>
 );
