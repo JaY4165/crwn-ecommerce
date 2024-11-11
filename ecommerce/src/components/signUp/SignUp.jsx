@@ -13,6 +13,7 @@ const SignUp = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     console.log(name, value);
+    dispatch(updateFormData({ [name]: value }));
   };
 
   const validateForm = () => {
@@ -63,7 +64,13 @@ const SignUp = () => {
           <p className="error">{errors.displayName.message}</p>
         )}
 
-        <FormInput type="email" name="email" required placeholder="Email" />
+        <FormInput
+          type="email"
+          name="email"
+          required
+          placeholder="Email"
+          onChange={handleChange}
+         />
         {errors.email && <p className="error">{errors.email.message}</p>}
 
         <FormInput
