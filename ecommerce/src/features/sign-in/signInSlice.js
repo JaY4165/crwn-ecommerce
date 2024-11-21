@@ -1,16 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-export const signUpUser = createAsyncThunk(
-  "sign-up/signUpUser",
+export const signInUser = createAsyncThunk(
+  "sign-in/signInUser",
   async (formData, { rejectWithValue }) => {
     try {
       const formDataValues = {
-        displayName: formData.displayName,
         email: formData.email,
         password: formData.password,
       };
       console.log(formDataValues);
-      const response = await fetch("http://localhost:3000/signup", {
+      const response = await fetch("http://localhost:3000/signin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -19,7 +18,7 @@ export const signUpUser = createAsyncThunk(
       });
 
       if (!response.ok) {
-        throw new Error("Sign Up Failed");
+        throw new Error("Sign In Failed");
       }
 
       console.log(response.json());
@@ -30,13 +29,11 @@ export const signUpUser = createAsyncThunk(
   }
 );
 
-const signUpSlice = createSlice({
-  name: "sign-up",
+const signInSlice = createSlice({
+  name: "sign-in",
   initialState: {
-    displayName: "",
     email: "",
     password: "",
-    confirmPassword: "",
     errors: {},
   },
   status: "idle",
@@ -53,21 +50,21 @@ const signUpSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
-      .addCase(signUpUser.pending, (state) => {
+      .addCase(signInUser.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(signUpUser.fulfilled, (state, action) => {
+      .addCase(signInUser.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.displayName = action.payload.displayName;
         state.email = action.payload.email;
         state.password = action.payload.password;
       })
-      .addCase(signUpUser.rejected, (state, action) => {
+      .addCase(signInUser.rejected, (state, action) => {
         state.status = "failed";
         state.errorMessage = action.payload;
       });
   },
 });
 
-export const { updateFormData, setErrors } = signUpSlice.actions;
-export default signUpSlice.reducer;
+export const { updateFormData, setErrors } = signInSlice.actions;
+export default signInSlice.reducer;

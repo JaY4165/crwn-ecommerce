@@ -1,8 +1,18 @@
 import { useDispatch, useSelector } from "react-redux";
-import { setErrors, updateFormData } from "../../features/sign-up/signUpSlice";
-import FormInput from "../formInput/FormInput";
-import CustomButton from "../customButton/CustomButton";
+import {
+  setErrors,
+  signUpUser,
+  updateFormData,
+} from "../../features/sign-up/signUpSlice";
+import { Button } from "../../components/ui/button";
 import "./sign-up.scss";
+import { Input } from "../../components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
 
 const SignUp = () => {
   const dispatch = useDispatch();
@@ -10,6 +20,7 @@ const SignUp = () => {
   const errors = useSelector((state) => state.signUp.errors);
   const status = useSelector((state) => state.signUp.status);
   const errorMessage = useSelector((state) => state.signUp.errorMessage);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     console.log(name, value);
@@ -38,65 +49,71 @@ const SignUp = () => {
     return errors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       dispatch(setErrors(validationErrors));
     } else {
-      dispatch(updateFormData(formData));
+      dispatch(signUpUser(formData));
     }
   };
 
   return (
-    <div className="sign-up-container">
-      <h2>Not registered yet ? Create an account</h2>
-      <span>Sign up</span>
-      <form onSubmit={handleSubmit}>
-        <FormInput
-          type="text"
-          name="displayName"
-          required
-          placeholder="Display Name"
-          onChange={handleChange}
-        />
-        {errors.displayName && (
-          <p className="error">{errors.displayName.message}</p>
-        )}
+    <div className="space-y-5">
+      <Card className="pt-6">
+        <CardTitle className="text-start px-6">Sign Up</CardTitle>
+        <CardHeader className="text-start ">
+          Not registered yet ? Create an account
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <Input
+              type="text"
+              name="displayName"
+              required
+              placeholder="Display Name"
+              onChange={handleChange}
+            />
+            {errors.displayName && (
+              <p className="error">{errors.displayName.message}</p>
+            )}
 
-        <FormInput
-          type="email"
-          name="email"
-          required
-          placeholder="Email"
-          onChange={handleChange}
-         />
-        {errors.email && <p className="error">{errors.email.message}</p>}
+            <Input
+              type="email"
+              name="email"
+              required
+              placeholder="Email"
+              onChange={handleChange}
+            />
+            {errors.email && <p className="error">{errors.email}</p>}
 
-        <FormInput
-          type="password"
-          name="password"
-          required
-          placeholder="Password"
-          onChange={handleChange}
-        />
-        {errors.password && <p className="error">{errors.password.message}</p>}
+            <Input
+              type="password"
+              name="password"
+              required
+              placeholder="Password"
+              onChange={handleChange}
+            />
+            {errors.password && <p className="error">{errors.password}</p>}
 
-        <FormInput
-          type="password"
-          name="confirmPassword"
-          required
-          placeholder="Confirm Password"
-          onChange={handleChange}
-        />
-        {errors.confirmPassword && (
-          <p className="error">{errors.confirmPassword.message}</p>
-        )}
+            <Input
+              type="password"
+              name="confirmPassword"
+              required
+              placeholder="Confirm Password"
+              onChange={handleChange}
+            />
+            {errors.confirmPassword && (
+              <p className="error">{errors.confirmPassword}</p>
+            )}
 
-        <CustomButton type="submit" className="sign-in">
-          Sign Up
-        </CustomButton>
-      </form>
+            <Button type="submit" className="sign-in">
+              Sign Up
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };

@@ -8,15 +8,15 @@ const MenuItem = (props) => {
   return (
     <Link to={`/shop/${title}`} className="menu-item">
       <div
-        className="background-image"
+        className="background-image rounded-xl"
         style={{ backgroundImage: `url(${imageUrl})` }}
       ></div>
-      <div className="content">
+      <div className="content rounded-lg">
         {
           // eslint-disable-next-line react/prop-types
           <div className="title">{title.toUpperCase()}</div>
         }
-        <div className="subtitle">Shop Now</div>
+        <div className="text-black">Shop Now</div>
       </div>
     </Link>
   );

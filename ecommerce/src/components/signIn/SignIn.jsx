@@ -1,78 +1,111 @@
-import { useEffect, useState } from "react";
-import CustomButton from "../customButton/CustomButton";
-import FormInput from "../formInput/FormInput";
 import "./sign-in.scss";
-import axios from "axios";
+import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setErrors,
+  signInUser,
+  updateFormData,
+} from "../../features/sign-in/signInSlice";
 
 const SignIn = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const dispatch = useDispatch();
+  const formData = useSelector((state) => state.signIn.formData);
+  const errors = useSelector((state) => state.signIn.errors);
+  // const [email, setEmail] = useState("");
+  // const [password, setPassword] = useState("");
+  // const [errors, setErrors] = useState({});
+  // const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    console.log(name, value);
+    dispatch(updateFormData({ [name]: value }));
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setIsSubmitting(true);
-    if (Object.keys(errors).length === 0) {
-      try {
-        const res = await axios.post("http://localhost:3000/signin", {
-          email,
-          password,
-        });
-        alert("Sign In Successful");
-        console.log(res.data);
-      } catch (error) {
-        alert("Sign in failed, please try again");
-        console.log(error);
-      }
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      dispatch(setErrors(validationErrors));
     } else {
-      alert("Sign in Failed, please try again after fixing the errors");
+      dispatch(signInUser(formData));
     }
-    setIsSubmitting(false);
   };
 
-  useEffect(() => {
+  const validateForm = () => {
     const newErrors = {};
 
-    if (!email) {
+    if (!formData.email) {
       newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Email is invalid";
     }
 
-    if (!password) {
+    if (!formData.password) {
       newErrors.password = "Password is required";
-    } else if (password.length < 6) {
-      newErrors.password = "Password must have at least 6 characters";
+    } else if (formData.password.length < 1) {
+      newErrors.password = "Enter a valid password";
     }
     setErrors(newErrors);
-  }, [email, password]);
+  };
+
+  // useEffect(() => {
+  //   const newErrors = {};
+
+  //   if (!email) {
+  //     newErrors.email = "Email is required";
+  //   } else if (!/\S+@\S+\.\S+/.test(email)) {
+  //     newErrors.email = "Email is invalid";
+  //   }
+
+  //   if (!password) {
+  //     newErrors.password = "Password is required";
+  //   } else if (password.length < 6) {
+  //     newErrors.password = "Password must have at least 6 characters";
+  //   }
+  //   setErrors(newErrors);
+  // }, [email, password]);
 
   return (
-    <div className="signIn">
-      <h2 className="title">I already have an account</h2>
-      <span>Sign in with your email and password</span>
-      <form onSubmit={handleSubmit}>
-        <FormInput
-          type="email"
-          name="email"
-          required
-          placeholder="Email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        {errors.email && <p className="error">{errors.email}</p>}
-        <FormInput
-          type="password"
-          name="password"
-          required
-          placeholder="Password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        {errors.password && <p className="error">{errors.password}</p>}
-        <CustomButton type="submit" className="sign-in" disabled={isSubmitting}>
-          Sign in
-        </CustomButton>
-      </form>
+    <div className="">
+      <Card className="pt-6">
+        <CardTitle className="text-start px-6">Sign in</CardTitle>
+        <CardHeader className="text-start">
+          I already have an account
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <Input
+              type="email"
+              name="email"
+              required
+              placeholder="Email"
+              onChange={handleChange}
+            />
+            {errors.email && <p className="error">{errors.email.message}</p>}
+            <Input
+              type="password"
+              name="password"
+              required
+              placeholder="Password"
+              onChange={handleChange}
+            />
+            {errors.password && (
+              <p className="error">{errors.password.message}</p>
+            )}
+            <Button type="submit" className="sign-in">
+              Sign in
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };

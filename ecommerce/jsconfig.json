@@ -1,0 +1,19 @@
+{
+  "files": [],
+  "references": [
+    {
+        "path": "./jsconfig.app.json",
+        "type": "json"
+    },
+    {
+        "path": "./jsconfig.json",
+        "type": "json"
+    }
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
